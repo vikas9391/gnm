@@ -1,0 +1,13 @@
+# Django & Python
+backend/env/
+*.pyc
+__pycache__/
+
+# Node / React
+frontend/node_modules/
+frontend/build/
+
+# Secrets
+*.env
+.env
+backend/.env
