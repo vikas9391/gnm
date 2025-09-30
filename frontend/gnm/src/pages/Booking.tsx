@@ -54,7 +54,15 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     // Send form data to Django backend
-    const response = await axios.post('http://localhost:8000/api/booking/', formData);
+    const response = await axios.post('http://localhost:8000/api/booking/', formData,
+      {
+        withCredentials: true, 
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    
     console.log('Booking submitted:', response.data);
 
     // Show success toast
@@ -133,7 +141,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         required
-                        placeholder="your.email@example.com"
+                        placeholder="youremail@example.com"
                       />
                     </div>
                   </div>
@@ -146,7 +154,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       required
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="+91 9876543210"
                     />
                   </div>
 

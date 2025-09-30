@@ -42,17 +42,6 @@ const ServicesPreview = () => {
   return (
     <section className="section-padding bg-muted/30">
       <div className="container-custom">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="flex items-center justify-center mb-4">
-            <Sparkles className="h-8 w-8 text-secondary mr-2" />
-            <h2 className="text-4xl md:text-5xl font-serif font-bold">Our Services</h2>
-          </div>
-          <p className="text-xl text-muted-foreground leading-relaxed">
-            From intimate gatherings to grand celebrations, we specialize in creating 
-            unforgettable experiences tailored to your unique vision and requirements.
-          </p>
-        </div>
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">

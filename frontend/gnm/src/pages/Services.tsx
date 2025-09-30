@@ -89,22 +89,8 @@ const Services = () => {
   ];
 
   return (
-    <main className="pt-24">
-      {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-muted/50 to-background">
-        <div className="container-custom text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
-            Our <span className="text-primary">Services</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            From intimate gatherings to grand celebrations, we offer comprehensive event planning 
-            services tailored to your unique vision and requirements.
-          </p>
-        </div>
-      </section>
-
-      {/* Main Services */}
-      <section className="section-padding">
+    <main className='pt-8'>
+      <section>
         <div className="container-custom space-y-20">
           {services.map((service, index) => (
             <div key={service.title} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${

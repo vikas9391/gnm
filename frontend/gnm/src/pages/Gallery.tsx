@@ -97,22 +97,10 @@ const Gallery = () => {
   };
 
   return (
-    <main className="pt-24">
-      {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-muted/50 to-background">
-        <div className="container-custom text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
-            Our <span className="text-primary">Gallery</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Explore our portfolio of successful events and celebrations. Each image tells a story 
-            of careful planning, creative design, and flawless execution.
-          </p>
-        </div>
-      </section>
+    <main className="pt-8">
 
       {/* Filter Section */}
-      <section className="section-padding">
+      <section className="section-padding pt-0">
         <div className="container-custom">
           <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
             <div className="flex items-center space-x-2 text-muted-foreground">

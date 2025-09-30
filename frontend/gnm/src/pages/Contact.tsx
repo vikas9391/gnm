@@ -27,7 +27,12 @@ const Contact = () => {
 
   try {
     // Send form data to Django backend
-    const response = await axios.post('http://localhost:8000/api/contact/', formData);
+    const response = await axios.post('http://localhost:8000/api/contact/', formData,{
+        withCredentials: true, // ✅ Important for cookie-based auth
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     console.log('Contact form submitted:', response.data);
 
     toast({
