@@ -103,7 +103,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8080",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # CRITICAL - allows cookies to be sent
@@ -113,7 +112,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8080",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:5173",
 ]
 
 CSRF_COOKIE_HTTPONLY = False  # Allow JS to read CSRF token
@@ -198,8 +196,14 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
 ACCOUNT_ADAPTER = "accounts.adapters.MyAccountAdapter"
 
-LOGIN_REDIRECT_URL = "http://localhost:8080/"
-LOGOUT_REDIRECT_URL = "/"
+# LOGIN_REDIRECT_URL = "http://localhost:8080/"
+# LOGOUT_REDIRECT_URL = "/"
+
+# settings.py - Make sure these match
+LOGIN_REDIRECT_URL = "http://localhost:8080/auth/google/success"  
+FRONTEND_URL = "http://localhost:8080"
+
+
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -209,7 +213,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": ""
         },
         "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "offline"},
+        "AUTH_PARAMS": {"access_type": "online"}, 
     },
     "apple": {
         "APP": {
@@ -227,6 +231,8 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = "http://localhost:8000/accounts/google/login/callback/"
 FRONTEND_URL = "http://localhost:8080"  
+
+
 
 
 # ----------------------------
@@ -285,3 +291,14 @@ STATIC_URL = 'static/'
 # DEFAULT AUTO FIELD
 # ----------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Social Account Settings
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Automatically create account
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip confirmation, login directly
+
+# Optional: Pre-fill email as verified
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Skip the intermediate confirmation page
+SOCIALACCOUNT_QUERY_EMAIL = False

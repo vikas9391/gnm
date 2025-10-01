@@ -115,15 +115,18 @@ const Login = () => {
     }
   };
 
-  const openSocial = (provider: "google" | "apple") => {
-    // allauth social login start URL — opens in same tab (recommended).
-    // You can pass `next` param to redirect back to frontend: e.g. ?next=https://your-frontend.com/social-callback
-    const socialUrl = `${API_BASE}/accounts/${provider}/login/?process=login&next=${encodeURIComponent(
-      window.location.origin + "/" //"/social-callback"
-    )}`;
-    // redirect browser to backend social login start
-    window.location.href = socialUrl;
-  };
+// In Login.tsx, update openSocial:
+const openSocial = (provider: "google" | "apple") => {
+  // Navigate to your confirmation page FIRST
+  navigate(`/auth/${provider}/confirm`);
+};
+
+const handleContinue = () => {
+  const frontendUrl = "http://localhost:8080";
+  const redirectUri = `${frontendUrl}/auth/google/callback`;
+  const socialUrl = `${API_BASE}/accounts/google/login/?next=${encodeURIComponent(redirectUri)}`;
+  window.location.href = socialUrl;
+};
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -207,7 +210,8 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-hero hover:shadow-elegant transition-all duration-300"
+                 variant="outline"
+                className="w-full bg-gradient-hero hover:shadow-elegant transition-all duration-300 text-black"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
@@ -228,10 +232,10 @@ const Login = () => {
                 Continue with Google
               </Button>
 
-              <Button variant="outline" className="w-full" onClick={() => openSocial("apple")}>
+              {/* <Button variant="outline" className="w-full" onClick={() => openSocial("apple")}>
                 <Mail className="w-4 h-4 mr-2" />
                 Continue with Apple
-              </Button>
+              </Button> */}
             </div>
 
             <div className="mt-6 text-center text-sm text-muted-foreground">

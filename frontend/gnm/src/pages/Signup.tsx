@@ -252,7 +252,8 @@ const Signup = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-hero hover:shadow-elegant transition-all duration-300"
+                 variant="outline"
+                className="w-full bg-gradient-hero hover:shadow-elegant transition-all duration-300 text-black"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
@@ -266,9 +267,9 @@ const Signup = () => {
               <Button variant="outline" className="w-full" onClick={() => openSocial("google")}>
                 Continue with Google
               </Button>
-              <Button variant="outline" className="w-full" onClick={() => openSocial("apple")}>
+              {/* <Button variant="outline" className="w-full" onClick={() => openSocial("apple")}>
                 Continue with Apple
-              </Button>
+              </Button> */}
             </div>
 
             <div className="text-center text-sm text-muted-foreground mt-4">

@@ -27,6 +27,10 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import SocialCallback from "./pages/SocialCallback";
 import Profile from "./pages/Profile";
+import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
+import GoogleAuthConfirm from './pages/GoogleAuthConfirm';
+
+
 
 
 
@@ -43,45 +47,37 @@ const App = () => (
           <Header />
 
           <div className="flex-1">
-            <Routes>
+         
               {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/booking" element={<Booking />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/social-callback" element={<SocialCallback />} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
+              <Routes>
+  {/* Public Routes */}
+  <Route path="/" element={<Home />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/services" element={<Services />} />
+  <Route path="/gallery" element={<Gallery />} />
+  <Route path="/blog" element={<Blog />} />
+  <Route path="/booking" element={<Booking />} />
+  <Route path="/contact" element={<Contact />} />
+  
+  {/* Authentication Routes */}
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/reset-password" element={<ResetPassword />} />
+  
+  {/* Google OAuth Routes */}
+  <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
+  <Route path="/social-callback" element={<SocialCallback />} />
+  <Route path="/auth/google/confirm" element={<GoogleAuthConfirm />} />
+  
+  {/* Protected Routes */}
+  <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+  <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-              {/* Authentication Routes */}
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-
-              {/* ✅ Protected Routes */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <Admin />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/history"
-                element={
-                  <ProtectedRoute>
-                    <History />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Catch-all for 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+  {/* Catch-all for 404 */}
+  <Route path="*" element={<NotFound />} />
+</Routes>           
           </div>
 
           <Footer />

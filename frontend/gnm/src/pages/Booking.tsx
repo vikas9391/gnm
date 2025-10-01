@@ -37,11 +37,11 @@ const Booking = () => {
 
   const budgetRanges = [
     'Under 5,000',
-    '$5,000 - $10,000',
-    '$10,000 - $25,000',
-    '$25,000 - $50,000',
-    '$50,000 - $100,000',
-    'Over $100,000',
+    '5,000 - 10,000',
+    '10,000 - 25,000',
+    '25,000 - 50,000',
+    '50,000 - 1,00,000',
+    'Over 1,00,000',
   ];
 
   const handleInputChange = (field: string, value: string) => {
@@ -293,7 +293,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     Prefer to talk directly? Call us:
                   </p>
                   <Button variant="outline" className="w-full">
-                    <span className="font-semibold">+1 (555) 123-4567</span>
+                    <span className="font-semibold">+91 5551234567</span>
                   </Button>
                 </div>
               </div>

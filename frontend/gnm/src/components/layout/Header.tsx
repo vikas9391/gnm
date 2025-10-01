@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,8 @@ const api = axios.create({
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
+
+
 
 interface UserData {
   id: number;
@@ -79,7 +82,7 @@ const Header = () => {
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
     { name: 'Gallery', href: '/gallery' },
-    { name: 'Blog', href: '/blog' },
+    // { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ];
 
@@ -164,7 +167,26 @@ const Header = () => {
   }
 
   return (
-    <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+    
+<header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+  <div className="bg-primary text-primary-foreground py-2">
+    <div className="container-custom">
+      <div className="flex items-center justify-between text-sm">
+        {/* Left side - Phone */}
+        <div className="flex items-center space-x-2">
+          <Phone className="h-4 w-4" />
+          <span>91+ 8919897027</span>
+        </div>
+
+        {/* Right side - Email */}
+        <div className="flex items-center space-x-2">
+          <Mail className="h-4 w-4" />
+          <span>gnmevents95@gmail.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
       {/* Main Navigation */}
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
@@ -242,14 +264,14 @@ const Header = () => {
                       </div>
 
                       <div className="space-y-2 mb-4 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Username:</span>
-                          <span>{userData?.username}</span>
-                        </div>
-                        <div className="flex justify-between">
+                        {/* <div className="flex justify-between"> */}
+                          {/* <span className="text-muted-foreground">Username:</span> */}
+                          {/* <span>{userData?.username}</span> */}
+                        {/* </div> */}
+                        {/* <div className="flex justify-between">
                           <span className="text-muted-foreground">User ID:</span>
                           <span>#{userData?.id}</span>
-                        </div>
+                        </div> */}
                         {isAdmin && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Role:</span>

@@ -65,19 +65,19 @@ const Contact = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
+      details: ['+91 9183198997', '+91 8919897024'],
       description: 'Call us during business hours',
     },
     {
       icon: Mail,
       title: 'Email',
-      details: ['info@gmnevents.com', 'bookings@gmnevents.com'],
+      details: ['gnmevents95@gmail.com', 'bookings@gmnevents.com'],
       description: 'Send us an email anytime',
     },
     {
       icon: MapPin,
       title: 'Office',
-      details: ['123 Event Avenue', 'New York, NY 10001'],
+      details: ['location'],
       description: 'Visit our planning studio',
     },
     {
@@ -89,22 +89,10 @@ const Contact = () => {
   ];
 
   return (
-    <main className="pt-24">
-      {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-muted/50 to-background">
-        <div className="container-custom text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
-            Contact <span className="text-primary">Us</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Ready to start planning your perfect event? Get in touch with our team for a free 
-            consultation and let's bring your vision to life.
-          </p>
-        </div>
-      </section>
-
+    <main>
+     
       {/* Contact Section */}
-      <section className="section-padding">
+      <section className="section-padding pt-8 pb-12">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
@@ -223,7 +211,7 @@ const Contact = () => {
                 </p>
                 <Button 
                   className="w-full bg-green-500 hover:bg-green-600 text-white"
-                  onClick={() => window.open('https://wa.me/15551234567', '_blank')}
+                  onClick={() => window.open('https://wa.me/918919897024?text=Hello%20I%20am%20interested%20in%20your%20services', '_blank')}
                 >
                   Chat on WhatsApp
                 </Button>
@@ -273,35 +261,16 @@ const Contact = () => {
               <MapPin className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Interactive Map</h3>
               <p className="text-muted-foreground max-w-md">
-                Google Maps integration would be embedded here showing our office location at 123 Event Avenue, New York, NY 10001
+                Location
               </p>
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => window.open('https://maps.google.com/?q=123+Event+Avenue+New+York+NY+10001', '_blank')}
+                onClick={() => window.open('https://maps.google.com/?q=Kukatpally+Hyderabad+500072', '_blank')}
               >
                 Open in Google Maps
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-custom text-center">
-          <h2 className="text-4xl font-serif font-bold mb-6">Ready to Plan Your Event?</h2>
-          <p className="text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Don't wait - let's start creating your perfect event today. Book a free 
-            consultation and see how we can make your vision come to life.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="btn-hero">
-              Book Free Consultation
-            </Button>
-            <Button size="lg" variant="outline" className="btn-outline-light text-black">
-              View Our Portfolio
-            </Button>
           </div>
         </div>
       </section>
