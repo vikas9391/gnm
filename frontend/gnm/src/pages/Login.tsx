@@ -133,8 +133,8 @@ const handleContinue = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-gradient-elegant">
-      <div className="container max-w-md mx-auto px-4 py-16">
+    <div className="min-h-screen  bg-gradient-elegant">
+      <div className="container max-w-md mx-auto px-4  py-16">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to access your account</p>

@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Trash2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import {Link} from "react-router-dom";
+
 
 interface Booking {
   id: number;
@@ -161,7 +163,9 @@ const History = () => {
                 <p className="text-muted-foreground mb-6">
                   You haven't booked any events with us yet.
                 </p>
+                <Link to="/booking">
                 <Button>Book Your First Event</Button>
+                </Link>
               </CardContent>
             </Card>
           )}

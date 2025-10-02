@@ -7,7 +7,6 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.decorators import api_view, permission_classes
-from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError
 from django.views.decorators.http import require_http_methods
@@ -24,6 +23,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.core.cache import cache  
 from urllib.parse import quote
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 logger = logging.getLogger(__name__)
@@ -447,7 +448,7 @@ def password_reset_request(request):
                     <p>We received a request to reset your password for your GNM Events account.</p>
                     <p>Click the button below to reset your password:</p>
                     <div style="text-align: center;">
-                        <a href="{reset_url}" class="button">Reset Password</a>
+                        <a href="{reset_url}" class="button" style="color:white">Reset Password</a>
                     </div>
                     <p>Or copy and paste this link into your browser:</p>
                     <p style="word-break: break-all; background: #fff; padding: 10px; border-radius: 5px;">

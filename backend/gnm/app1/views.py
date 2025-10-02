@@ -8,7 +8,8 @@ from .serializers import ContactMessageSerializer, BookingSerializer
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import AnonymousUser
 from .models import Booking
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 # Admin: Get all users with their booking stats
 @api_view(['GET'])
 @permission_classes([IsAdminUser])

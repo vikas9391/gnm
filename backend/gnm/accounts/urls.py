@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from .views import (
     CookieLoginView,
     CookieLogoutView,
@@ -9,7 +9,6 @@ from .views import (
     password_reset_request,
     password_reset_confirm,
     validate_reset_token,
-    ProfileUpdateView,
 )
 
 urlpatterns = [
@@ -20,11 +19,12 @@ urlpatterns = [
     path("me/", MeView.as_view(), name="current_user"),
     path("csrf/", csrf, name="csrf"),
     path("register/", register_user, name="register"),
-    path("profile/update/", ProfileUpdateView.as_view(), name="profile_update"),
 
     
     # Password reset endpoints
     path("password-reset/", password_reset_request, name="password_reset_request"),
     path("password-reset/confirm/", password_reset_confirm, name="password_reset_confirm"),
     path("password-reset/validate/", validate_reset_token, name="validate_reset_token"),
+
+    path('', include('profile.urls')),
 ]

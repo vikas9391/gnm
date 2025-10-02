@@ -152,7 +152,7 @@ const ForgotPassword = () => {
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-hero hover:shadow-elegant transition-all duration-300"
+                className="w-full bg-gradient-hero hover:shadow-elegant hover:text-white transition-all duration-300 text-black"
                 disabled={isLoading}
               >
                 {isLoading ? (
