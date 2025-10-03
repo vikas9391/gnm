@@ -24,6 +24,7 @@ from django.core.mail import send_mail
 from django.core.cache import cache  
 from urllib.parse import quote
 from django.contrib.auth import get_user_model
+from profile.serializers import UserSerializer
 User = get_user_model()
 
 
@@ -294,25 +295,25 @@ class CookieLogoutView(APIView):
 
 # ----------------------------
 # Current user info
-# ----------------------------
-class MeView(APIView):
-    authentication_classes = [CookieJWTAuthentication]
-    permission_classes = [IsAuthenticated]
+# # ----------------------------
+# class MeView(APIView):
+#     authentication_classes = [CookieJWTAuthentication]
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        logger.info(f"MeView called for user: {user.email if user.is_authenticated else 'Anonymous'}")
+#     def get(self, request):
+#         user = request.user
+#         logger.info(f"MeView called for user: {user.email if user.is_authenticated else 'Anonymous'}")
         
-        return Response({
-            "id": user.id,
-            "email": user.email,
-            "username": user.username,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "is_staff": user.is_staff,
-            "is_superuser": user.is_superuser,
-        })
-
+#         # Refresh from database to get latest data
+#         user.refresh_from_db()
+        
+#         # Use UserSerializer to get complete profile data
+#         serializer = UserSerializer(user, context={'request': request})
+        
+#         logger.info(f"MeView returning {len(str(serializer.data))} bytes of data")
+#         logger.info(f"MeView data keys: {list(serializer.data.keys())}")
+        
+#         return Response(serializer.data)
 # ----------------------------
 # CSRF endpoint
 # ----------------------------

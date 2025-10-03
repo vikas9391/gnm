@@ -8,33 +8,42 @@ from .serializers import ContactMessageSerializer, BookingSerializer
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import AnonymousUser
 from .models import Booking
+from django.contrib.auth.models import User
+from profile.serializers import UserSerializer
+import logging
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
+
+
+
+logger = logging.getLogger(__name__)
+
 # Admin: Get all users with their booking stats
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def admin_all_users(request):
-    users = User.objects.all().order_by('-date_joined')
-    
-    user_data = []
-    for user in users:
-        user_bookings = Booking.objects.filter(user=user)
-        user_data.append({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'date_joined': user.date_joined,
-            'is_active': user.is_active,
-            'is_staff': user.is_staff,
-            'booking_count': user_bookings.count(),
-        })
-    
-    return Response(user_data)
+    """
+    Get all users with complete profile data for admin
+    Endpoint: GET /api/admin/users/
+    """
+    try:
+        users = User.objects.all().order_by('-date_joined')
+        
+        # Use the UserSerializer to get complete profile data
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        
+        logger.info(f"Admin fetched {users.count()} users")
+        
+        return Response(serializer.data)
+    except Exception as e:
+        logger.exception(f"Error fetching users for admin: {str(e)}")
+        return Response(
+            {'detail': 'Failed to fetch users'},
+            status=500
+        ) 
 
-
-# Contact form submission - REQUIRES LOGIN
+# Contact form submission - ALLOWS GUEST USERS
 @api_view(['POST'])
 @permission_classes([AllowAny]) 
 def contact_message(request):
@@ -43,7 +52,7 @@ def contact_message(request):
 
         # ✅ Only attach user if authenticated
         if isinstance(request.user, AnonymousUser):
-            serializer.save()  # no need to store saved_data
+            serializer.save()
             user_id = "Guest"
             user_email = serializer.data['email']  # fallback to submitted email
         else:
@@ -74,14 +83,21 @@ Message: {serializer.data['message']}
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Booking form submission - REQUIRES LOGIN
+# Booking form submission - ALLOWS GUEST USERS
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def booking_request(request):
     serializer = BookingSerializer(data=request.data)
     if serializer.is_valid():
-        # Save and link to user (no need to capture return value)
-        serializer.save(user=request.user)
+        # ✅ Only attach user if authenticated
+        if isinstance(request.user, AnonymousUser):
+            serializer.save()
+            user_id = "Guest"
+            user_email = serializer.data['email']  # fallback to submitted email
+        else:
+            serializer.save(user=request.user)
+            user_id = request.user.id
+            user_email = request.user.email
 
         # Send email to organization
         email = EmailMessage(
@@ -89,8 +105,8 @@ def booking_request(request):
             body=f"""
 New Booking Details:
 
-User ID: {request.user.id}
-User Email: {request.user.email}
+User ID: {user_id}
+User Email: {user_email}
 Name: {serializer.data['name']}
 Email: {serializer.data['email']}
 Phone: {serializer.data['phone']}
@@ -98,7 +114,6 @@ Event Type: {serializer.data['eventType']}
 Event Date: {serializer.data['eventDate']}
 Venue: {serializer.data['venue']}
 Guest Count: {serializer.data['guestCount']}
-Budget: {serializer.data['budget']}
 Special Requests: {serializer.data['specialRequests']}
             """,
             from_email=settings.EMAIL_HOST_USER,

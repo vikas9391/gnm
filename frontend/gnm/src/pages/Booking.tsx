@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, MapPin, Users, MessageSquare, CheckCircle } from 'lucide-react';
+import { Calendar, MessageSquare, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Booking = () => {
@@ -16,10 +16,10 @@ const Booking = () => {
     email: '',
     phone: '',
     eventType: '',
+    customEventType: '',
     eventDate: '',
     venue: '',
     guestCount: '',
-    budget: '',
     specialRequests: '',
   });
 
@@ -35,67 +35,68 @@ const Booking = () => {
     'Other',
   ];
 
-  const budgetRanges = [
-    'Under 5,000',
-    '5,000 - 10,000',
-    '10,000 - 25,000',
-    '25,000 - 50,000',
-    '50,000 - 1,00,000',
-    'Over 1,00,000',
-  ];
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
-    // Send form data to Django backend
-    const response = await axios.post('http://localhost:8000/api/booking/', formData,
-      {
-        withCredentials: true, 
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      // Prepare data to send
+      const submitData = { ...formData };
+      
+      // If "Other" is selected, use customEventType as the eventType
+      if (formData.eventType === 'Other' && formData.customEventType) {
+        submitData.eventType = formData.customEventType;
       }
-    );
-    
-    console.log('Booking submitted:', response.data);
+      
+      // Remove customEventType from submission as it's not needed in backend
+      delete submitData.customEventType;
 
-    // Show success toast
-    toast({
-      title: "Booking Request Submitted!",
-      description: "We'll contact you within 24 hours to discuss your event details.",
-    });
+      // Send form data to Django backend
+      const response = await axios.post('http://localhost:8000/api/booking/', submitData,
+        {
+          withCredentials: true, 
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      console.log('Booking submitted:', response.data);
 
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      eventType: '',
-      eventDate: '',
-      venue: '',
-      guestCount: '',
-      budget: '',
-      specialRequests: '',
-    });
+      // Show success toast
+      toast({
+        title: "Booking Request Submitted!",
+        description: "We'll contact you within 24 hours to discuss your event details.",
+      });
 
-  } catch (error) {
-    console.error('Booking submit error:', error);
-    toast({
-      title: "Error",
-      description: "Failed to submit booking. Please try again.",
-      variant: 'destructive',
-    });
-  }
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        eventType: '',
+        customEventType: '',
+        eventDate: '',
+        venue: '',
+        guestCount: '',
+        specialRequests: '',
+      });
 
-  setIsSubmitting(false);
-};
+    } catch (error) {
+      console.error('Booking submit error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit booking. Please try again.",
+        variant: 'destructive',
+      });
+    }
 
+    setIsSubmitting(false);
+  };
 
   return (
     <main className="pt-24">
@@ -187,6 +188,20 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </div>
                   </div>
 
+                  {/* Custom Event Type Input - Shows when "Other" is selected */}
+                  {formData.eventType === 'Other' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="customEventType">Please specify your event type *</Label>
+                      <Input
+                        id="customEventType"
+                        value={formData.customEventType}
+                        onChange={(e) => handleInputChange('customEventType', e.target.value)}
+                        required
+                        placeholder="e.g., Product Launch, Engagement Party, Festival"
+                      />
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <Label htmlFor="venue">Preferred Venue</Label>
                     <Input
@@ -197,34 +212,17 @@ const handleSubmit = async (e: React.FormEvent) => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="guestCount">Number of Guests *</Label>
-                      <Input
-                        id="guestCount"
-                        type="number"
-                        value={formData.guestCount}
-                        onChange={(e) => handleInputChange('guestCount', e.target.value)}
-                        required
-                        placeholder="50"
-                        min="1"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="budget">Budget Range</Label>
-                      <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select budget range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {budgetRanges.map((range) => (
-                            <SelectItem key={range} value={range}>
-                              {range}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="guestCount">Number of Guests *</Label>
+                    <Input
+                      id="guestCount"
+                      type="number"
+                      value={formData.guestCount}
+                      onChange={(e) => handleInputChange('guestCount', e.target.value)}
+                      required
+                      placeholder="50"
+                      min="1"
+                    />
                   </div>
 
                   <div className="space-y-2">

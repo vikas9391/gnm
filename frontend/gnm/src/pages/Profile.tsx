@@ -153,110 +153,111 @@ const Profile = () => {
     handleImageUpload(file);
   };
 
- const handleImageUpload = async (file: File) => {
-  try {
-    setUploadingImage(true);
-    
-    const formData = new FormData();
-    formData.append('profile_image', file);
-
-    console.log("Uploading image...");
-    
-    const response = await axios.patch(
-      `${API_BASE}/api/auth/custom/profile/update/`,
-      formData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    console.log("Upload response:", response.data);
-
-    if (response.data) {
-      setUserData(response.data);
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploadingImage(true);
       
-      // Add cache-busting timestamp to avoid browser caching old image
-      if (response.data.profile_image_url) {
-        const urlWithTimestamp = `${response.data.profile_image_url}?t=${Date.now()}`;
-        console.log("Setting image preview:", urlWithTimestamp);
-        setImagePreview(urlWithTimestamp);
+      const formData = new FormData();
+      formData.append('profile_image', file);
+
+      console.log("Uploading image...");
+      
+      const response = await axios.patch(
+        `${API_BASE}/api/auth/custom/profile/update/`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log("Upload response:", response.data);
+
+      if (response.data) {
+        setUserData(response.data);
+        
+        // Add cache-busting timestamp to avoid browser caching old image
+        if (response.data.profile_image_url) {
+          const urlWithTimestamp = `${response.data.profile_image_url}?t=${Date.now()}`;
+          console.log("Setting image preview:", urlWithTimestamp);
+          setImagePreview(urlWithTimestamp);
+        }
+        
+        toast({
+          title: "Success",
+          description: "Profile image updated successfully.",
+        });
+        
+        // Refetch user data to ensure sync
+        setTimeout(() => fetchUserData(), 500);
+      }
+    } catch (error: any) {
+      console.error("Failed to upload image:", error);
+      console.error("Error response:", error.response?.data);
+      
+      const errorMessage = error?.response?.data?.detail || 
+                          error?.response?.data?.errors?.profile_image?.[0] ||
+                          "Failed to upload image. Please try again.";
+      
+      toast({
+        title: "Upload Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
+      // Reset preview on error
+      if (userData?.profile_image_url) {
+        setImagePreview(userData.profile_image_url);
+      } else {
+        setImagePreview(null);
+      }
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    if (!userData?.profile_image_url) return;
+
+    try {
+      setUploadingImage(true);
+      
+      console.log("Deleting profile image...");
+      const response = await api.delete("/api/auth/custom/profile/image/");
+      
+      console.log("Delete response:", response.data);
+      
+      // Update state with response data
+      if (response.data) {
+        setUserData(response.data);
+        setImagePreview(null);
       }
       
       toast({
         title: "Success",
-        description: "Profile image updated successfully.",
+        description: "Profile image deleted successfully.",
       });
       
-      // Refetch user data to ensure sync
+      // Refetch to ensure sync
       setTimeout(() => fetchUserData(), 500);
+    } catch (error: any) {
+      console.error("Failed to delete image:", error);
+      
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
     }
-  } catch (error: any) {
-    console.error("Failed to upload image:", error);
-    console.error("Error response:", error.response?.data);
-    
-    const errorMessage = error?.response?.data?.detail || 
-                        error?.response?.data?.errors?.profile_image?.[0] ||
-                        "Failed to upload image. Please try again.";
-    
-    toast({
-      title: "Upload Failed",
-      description: errorMessage,
-      variant: "destructive",
-    });
-    
-    // Reset preview on error
-    if (userData?.profile_image_url) {
-      setImagePreview(userData.profile_image_url);
-    } else {
-      setImagePreview(null);
-    }
-  } finally {
-    setUploadingImage(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }
-};
+  };
 
-const handleDeleteImage = async () => {
-  if (!userData?.profile_image_url) return;
-
-  try {
-    setUploadingImage(true);
-    
-    console.log("Deleting profile image...");
-    const response = await api.delete("/api/auth/custom/profile/image/");
-    
-    console.log("Delete response:", response.data);
-    
-    // Update state with response data
-    if (response.data) {
-      setUserData(response.data);
-      setImagePreview(null);
-    }
-    
-    toast({
-      title: "Success",
-      description: "Profile image deleted successfully.",
-    });
-    
-    // Refetch to ensure sync
-    setTimeout(() => fetchUserData(), 500);
-  } catch (error: any) {
-    console.error("Failed to delete image:", error);
-    
-    toast({
-      title: "Delete Failed",
-      description: "Failed to delete image. Please try again.",
-      variant: "destructive",
-    });
-  } finally {
-    setUploadingImage(false);
-  }
-};
   const handleEditField = (field: string) => {
     setEditingField(field);
   };
@@ -269,14 +270,124 @@ const handleDeleteImage = async () => {
     }));
   };
 
- const handleSaveField = async (field: keyof EditableData) => {
+  const validateField = (field: keyof EditableData, value: string): string | null => {
+    // Trim whitespace for validation
+    const trimmedValue = value.trim();
+
+    switch (field) {
+      case "first_name":
+        if (!trimmedValue) {
+          return "First name is required.";
+        }
+        if (trimmedValue.length < 2) {
+          return "First name must be at least 2 characters.";
+        }
+        if (trimmedValue.length > 50) {
+          return "First name must not exceed 50 characters.";
+        }
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmedValue)) {
+          return "First name can only contain letters, spaces, hyphens, and apostrophes.";
+        }
+        break;
+
+      case "last_name":
+        if (!trimmedValue) {
+          return "Last name is required.";
+        }
+        if (trimmedValue.length < 2) {
+          return "Last name must be at least 2 characters.";
+        }
+        if (trimmedValue.length > 50) {
+          return "Last name must not exceed 50 characters.";
+        }
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmedValue)) {
+          return "Last name can only contain letters, spaces, hyphens, and apostrophes.";
+        }
+        break;
+
+      case "username":
+        if (!trimmedValue) {
+          return "Username is required.";
+        }
+        if (trimmedValue.length < 3) {
+          return "Username must be at least 3 characters.";
+        }
+        if (trimmedValue.length > 30) {
+          return "Username must not exceed 30 characters.";
+        }
+        if (!/^[a-zA-Z0-9_.-]+$/.test(trimmedValue)) {
+          return "Username can only contain letters, numbers, underscores, hyphens, and periods.";
+        }
+        if (trimmedValue.startsWith('.') || trimmedValue.endsWith('.')) {
+          return "Username cannot start or end with a period.";
+        }
+        break;
+
+      case "phone":
+        if (trimmedValue && !/^[\d\s()+-]+$/.test(trimmedValue)) {
+          return "Phone number can only contain digits, spaces, and characters: ( ) + -";
+        }
+        if (trimmedValue.replace(/\D/g, '').length > 0 && trimmedValue.replace(/\D/g, '').length < 7) {
+          return "Phone number must contain at least 7 digits.";
+        }
+        if (trimmedValue.length > 20) {
+          return "Phone number must not exceed 20 characters.";
+        }
+        break;
+
+      case "location":
+        if (trimmedValue && trimmedValue.length < 2) {
+          return "Location must be at least 2 characters.";
+        }
+        if (trimmedValue.length > 100) {
+          return "Location must not exceed 100 characters.";
+        }
+        break;
+
+      case "bio":
+        if (trimmedValue.length > 500) {
+          return "Bio must not exceed 500 characters.";
+        }
+        break;
+
+      case "occupation":
+        if (trimmedValue && trimmedValue.length < 2) {
+          return "Occupation must be at least 2 characters.";
+        }
+        if (trimmedValue.length > 100) {
+          return "Occupation must not exceed 100 characters.";
+        }
+        break;
+
+      case "website":
+        if (trimmedValue) {
+          try {
+            const url = new URL(trimmedValue);
+            if (!['http:', 'https:'].includes(url.protocol)) {
+              return "Website must start with http:// or https://";
+            }
+          } catch {
+            return "Please enter a valid website URL (e.g., https://example.com)";
+          }
+          if (trimmedValue.length > 200) {
+            return "Website URL must not exceed 200 characters.";
+          }
+        }
+        break;
+    }
+
+    return null;
+  };
+
+  const handleSaveField = async (field: keyof EditableData) => {
     const value = editableData[field];
     
-    // Validation for required fields
-    if ((field === "first_name" || field === "last_name" || field === "username") && !value) {
+    // Validate the field
+    const validationError = validateField(field, value);
+    if (validationError) {
       toast({
         title: "Validation Error",
-        description: `${field.replace("_", " ")} is required.`,
+        description: validationError,
         variant: "destructive",
       });
       return;
@@ -286,7 +397,7 @@ const handleDeleteImage = async () => {
       setSavingField(field);
       
       await api.patch("/api/auth/custom/profile/update/", {
-        [field]: value
+        [field]: value.trim()
       });
       
       // Refetch complete user data after successful update
@@ -295,7 +406,7 @@ const handleDeleteImage = async () => {
       
       toast({
         title: "Success",
-        description: `${field.replace("_", " ")} has been updated successfully.`,
+        description: `${field.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())} has been updated successfully.`,
       });
     } catch (error: any) {
       console.error(`Failed to update ${field}:`, error);

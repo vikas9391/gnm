@@ -3,7 +3,7 @@ from .views import (
     CookieLoginView,
     CookieLogoutView,
     CookieTokenRefreshView,
-    MeView,
+    # MeView,
     csrf,
     register_user,
     password_reset_request,
@@ -16,7 +16,7 @@ urlpatterns = [
     path("login/", CookieLoginView.as_view(), name="cookie_login"),
     path("logout/", CookieLogoutView.as_view(), name="cookie_logout"),
     path("token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
-    path("me/", MeView.as_view(), name="current_user"),
+    # path("me/", MeView.as_view(), name="current_user"),
     path("csrf/", csrf, name="csrf"),
     path("register/", register_user, name="register"),
 
