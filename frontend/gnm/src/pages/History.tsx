@@ -6,6 +6,8 @@ import { Calendar, MapPin, Users, Trash2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import {Link} from "react-router-dom";
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
+
 
 
 interface Booking {
@@ -33,7 +35,8 @@ const History = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/bookings/history/', {
+      const response = await axios.get(`${API_BASE}/api/bookings/history/`
+, {
         withCredentials: true
       });
       setBookings(response.data);
@@ -53,7 +56,7 @@ const History = () => {
     if (!confirm('Are you sure you want to delete this booking?')) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/bookings/user/${bookingId}/delete/`, {
+      await axios.delete(`${API_BASE}/api/bookings/user/${bookingId}/delete/`, {
         withCredentials: true
       });
       

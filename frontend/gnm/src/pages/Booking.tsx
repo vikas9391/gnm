@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MessageSquare, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
+
 
 const Booking = () => {
   const { toast } = useToast();
@@ -56,8 +58,7 @@ const Booking = () => {
       delete submitData.customEventType;
 
       // Send form data to Django backend
-      const response = await axios.post('http://localhost:8000/api/booking/', submitData,
-        {
+     const response = await axios.post(`${API_BASE}/api/booking/`, submitData, {
           withCredentials: true, 
           headers: {
             "Content-Type": "application/json",

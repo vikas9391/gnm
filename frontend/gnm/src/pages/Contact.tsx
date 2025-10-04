@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -27,7 +28,9 @@ const Contact = () => {
 
   try {
     // Send form data to Django backend
-    const response = await axios.post('http://localhost:8000/api/contact/', formData,{
+    
+// Line 48 - Replace:
+const response = await axios.post(`${API_BASE}/api/contact/`, formData, {
         withCredentials: true, // ✅ Important for cookie-based auth
         headers: {
           "Content-Type": "application/json",

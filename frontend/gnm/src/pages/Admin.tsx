@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
+
+
 import { 
   Users, 
   Calendar, 
@@ -110,7 +113,7 @@ const Admin = () => {
 
   const fetchAllBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/admin/bookings/', {
+      const response = await axios.get(`${API_BASE}/api/admin/bookings/`, {
         withCredentials: true
       });
       setBookings(response.data);
@@ -129,7 +132,7 @@ const Admin = () => {
 
   const fetchAllUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/admin/users/', {
+      const response = await axios.get(`${API_BASE}/api/admin/users/`, {
         withCredentials: true
       });
       setUsers(response.data);
@@ -148,7 +151,7 @@ const Admin = () => {
     if (!confirm('Are you sure you want to delete this booking?')) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/admin/bookings/${bookingId}/delete/`, {
+      await axios.delete(`${API_BASE}/api/admin/bookings/${bookingId}/delete/`, {
         withCredentials: true
       });
       
@@ -178,7 +181,7 @@ const Admin = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/admin/bookings/${selectedBooking.id}/update/`,
+        `${API_BASE}/api/admin/bookings/${selectedBooking.id}/update/`,
         editForm,
         { withCredentials: true }
       );

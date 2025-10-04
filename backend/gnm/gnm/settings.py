@@ -5,6 +5,8 @@ Django settings for gnm project.
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from decouple import config
+
 
 load_dotenv()
 
@@ -14,12 +16,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ----------------------------
 # SECURITY SETTINGS
 # ----------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
-DEBUG = os.getenv("DEBUG", "True") == "True"
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable must be set")
+DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 'yes')
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 AUTH_USER_MODEL = 'profile.CustomUser'
 
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # hours
+AXES_LOCKOUT_URL = '/locked'
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 # ----------------------------
 # MEDIA FILES (UPLOADS)
 # ----------------------------
@@ -40,6 +51,7 @@ ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'ima
 # ----------------------------
 INSTALLED_APPS = [
     # Django default apps
+    'axes',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,6 +90,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'axes.middleware.AxesMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.JWTCookieMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -111,8 +124,6 @@ TEMPLATES = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # CRITICAL - allows cookies to be sent
@@ -120,8 +131,6 @@ CORS_ALLOW_CREDENTIALS = True  # CRITICAL - allows cookies to be sent
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
 ]
 
 CSRF_COOKIE_HTTPONLY = False  # Allow JS to read CSRF token
@@ -203,17 +212,21 @@ REST_AUTH = {
 # ALLAUTH & SOCIAL AUTH SETTINGS
 # ----------------------------
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+# Modern allauth configuration (matches what allauth expects)
+ACCOUNT_LOGIN_METHODS = ['email']  # Use email for login
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 
+# Adapters
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
 ACCOUNT_ADAPTER = "accounts.adapters.MyAccountAdapter"
 
-LOGIN_REDIRECT_URL = "http://localhost:8080/auth/google/success"
-FRONTEND_URL = "http://localhost:8080"
+# Redirect URLs
+LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "http://localhost:8080/auth/google/success")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:8080")
 
+# Social providers
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {
@@ -238,6 +251,46 @@ SOCIALACCOUNT_LOGIN_ON_GET = True  # Skip confirmation, login directly
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_QUERY_EMAIL = False
 
+# SSL/HTTPS Settings
+# Set to False for local development, True for production
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)  # Use 31536000 in production
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
+SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=False, cast=bool)
+
+# Cookie Security
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
+
+# Development vs Production settings
+if DEBUG:
+    # Local development - no SSL
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    # Production - with SSL/HTTPS
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
+# Add this after the if DEBUG / else block around line 218
+if not DEBUG:
+    # Trust proxy headers (required for platforms like Heroku, Railway, AWS ELB)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Update CORS and CSRF for production domain
+    PRODUCTION_DOMAIN = os.getenv("PRODUCTION_DOMAIN", "")
+    if PRODUCTION_DOMAIN:
+        CORS_ALLOWED_ORIGINS.append(f"https://{PRODUCTION_DOMAIN}")
+        CSRF_TRUSTED_ORIGINS.append(f"https://{PRODUCTION_DOMAIN}")
 # ----------------------------
 # GOOGLE OAUTH CREDENTIALS
 # ----------------------------
@@ -292,6 +345,7 @@ USE_TZ = True
 # STATIC FILES
 # ----------------------------
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  
 
 # ----------------------------
 # DEFAULT AUTO FIELD

@@ -9,10 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "http://localhost:8000";
-
+console.log("🔍 API_BASE:", API_BASE);
+console.log("🔍 ENV:", import.meta.env.VITE_API_BASE_URL);
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true, // send/receive cookies
@@ -122,7 +122,7 @@ const openSocial = (provider: "google" | "apple") => {
 };
 
 const handleContinue = () => {
-  const frontendUrl = "http://localhost:8080";
+  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || "http://localhost:8080";
   const redirectUri = `${frontendUrl}/auth/google/callback`;
   const socialUrl = `${API_BASE}/accounts/google/login/?next=${encodeURIComponent(redirectUri)}`;
   window.location.href = socialUrl;

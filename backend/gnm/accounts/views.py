@@ -326,8 +326,10 @@ def csrf(request):
 # ----------------------------
 # Register User
 # ----------------------------
-@csrf_exempt
+# FIXED
 @require_http_methods(["POST"])
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def register_user(request):
     """
     Register a new user
@@ -359,10 +361,11 @@ def register_user(request):
             )
 
         if User.objects.filter(email=email).exists():
-            return JsonResponse(
-                {"detail": "User with this email already exists"}, 
-                status=400
-            )
+            logger.warning(f"Registration attempt for existing email: {email}")
+            # Still return 201 to prevent enumeration
+            return JsonResponse({
+                "detail": "Account created successfully. Please check your email."
+            }, status=201)
 
         user = User.objects.create(
             username=email,
